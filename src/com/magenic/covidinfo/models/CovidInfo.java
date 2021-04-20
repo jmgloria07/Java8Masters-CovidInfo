@@ -15,7 +15,7 @@ public class CovidInfo {
 		this.cases = cases;
 		this.deaths = deaths;
 		this.recoveries = recoveries;
-		this.date = LocalDateTime.now();
+		this.setDate(LocalDateTime.now());
 	}
 	
 	public String getName() {
@@ -42,11 +42,19 @@ public class CovidInfo {
 	public void setRecoveries(int recoveries) {
 		this.recoveries = recoveries;
 	}
-	
+	public LocalDateTime getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDateTime date) {
+		this.date = date;
+	}
 	
 	public void display(){
 		System.out.println(String.format("%10s %10s %10s %15s", this.name, this.cases, this.deaths, this.recoveries));
 	}
+
+	
 	
 	/*
 	 * public void displayCreated() {
