@@ -14,12 +14,11 @@ public class Main {
 		service.add(new CovidInfo("US", 1001, 20, 552));
 		service.add(new CovidInfo("US", 1002, 20, 552));
 
-		CrudInfoService.covidInfos.forEach(CovidInfo::display);
+		//CrudInfoService.covidInfos.forEach(CovidInfo::display);
 		
 		service.delete("US");
-		System.out.println("after");
 		
-		CrudInfoService.covidInfos.forEach(CovidInfo::display);
+		//CrudInfoService.covidInfos.forEach(CovidInfo::display);
 	}
 
 }

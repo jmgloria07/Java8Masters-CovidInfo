@@ -15,14 +15,15 @@ public class CrudInfoService {
 		Optional.of(covidInfo)
 			.map(c -> {
 				covidInfos.add(c);
-				return covidInformationInterface.format(c.getName(), 
+				return "COVID-19 Information:\n" + covidInformationInterface.format(c.getName(), 
 						c.getCases(), 
 						c.getDeaths(), 
-						c.getRecoveries());
+						c.getRecoveries()) + "\n";
 			}).ifPresent(System.out::println);
 	}
 	
 	public void delete(String name) {
 		covidInfos.removeIf(c -> c.getName().equals(name));
+		System.out.format("%s COVID-19 Information has been deleted\n", name);
 	}
 }
