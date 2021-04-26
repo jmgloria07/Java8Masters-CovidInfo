@@ -2,25 +2,19 @@ package com.magenic.covidinfo;
 
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 import com.magenic.covidinfo.models.CovidInfo;
-import com.magenic.covidinfo.services.CrudInfoService;
+import com.magenic.covidinfo.services.CovidInfoCrud;
 
 public class Main {
 
-	private static CrudInfoService service = new CrudInfoService();
+	private static CovidInfoCrud service = new CovidInfoCrud();
 	private static Scanner scan = new Scanner(System.in);
 
-	public static void main(String[] args) {
-		service.add(new CovidInfo("PH", 100, 123, 123));
-		service.add(new CovidInfo("US", 89, 213, 131));
-		service.add(new CovidInfo("JP", 45, 341, 12));
-		service.add(new CovidInfo("US", 23, 20, 12));
-		
+	public static void main(String[] args) {		
 		startPage();
 	}
 	
@@ -124,7 +118,7 @@ public class Main {
 		System.out.println("\n============================================================");
 		System.out.println(String.format("%10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries"));
 		System.out.println("============================================================");
-		CrudInfoService.covidInfos.forEach(CovidInfo::display);
+		CovidInfoCrud.covidInfos.forEach(CovidInfo::display);
 		System.out.println();
 		
 	}

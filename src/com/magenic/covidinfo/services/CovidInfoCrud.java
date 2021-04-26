@@ -11,14 +11,13 @@ import java.util.function.Predicate;
 
 import com.magenic.covidinfo.models.CovidInfo;
 
-public class CrudInfoService {
-	CovidInformationInterface covidInformationInterface = new CovidInformationInterface() {
-	};
+public class CovidInfoCrud {
+	CovidInformationInterface covidInformationInterface = new CovidInformationInterface() {};
 
 	private Map<String, Comparator<CovidInfo>> sortBy = null;
 
 
-	public CrudInfoService() {
+	public CovidInfoCrud() {
 		sortBy = new HashMap<>();
 		sortBy.put("1", Comparator.comparing(CovidInfo::getName));
 		sortBy.put("2", Comparator.comparing(CovidInfo::getCases));
@@ -30,6 +29,7 @@ public class CrudInfoService {
 
 	public void add(CovidInfo covidInfo) {
 		Optional.of(covidInfo).map(c -> {
+			if (!isInputValid(covidInfo)) return null;
 			covidInfos.add(c);
 			return "COVID-19 Information:\n"
 					+ covidInformationInterface.format(c.getName(), c.getCases(), c.getDeaths(), c.getRecoveries())
@@ -71,6 +71,17 @@ public class CrudInfoService {
 		covidInfos.stream().filter(searchFilterMap.get(option)).sorted(sortBy.get(option))
 			.forEach(info -> System.out.println(String.format("%10s %10s %10s %15s", info.getName(),
 						info.getCases(), info.getDeaths(), info.getRecoveries())));
+	}
+	
+	private static boolean isInputValid(CovidInfo covidInfo) {
+		if (covidInfo.getDeaths() + covidInfo.getRecoveries() > covidInfo.getCases()) {
+			System.out.println("Number of recoveries plus deaths cannot be greater than total number of cases.");
+		} else if (covidInfos.stream().anyMatch(c -> covidInfo.getName().equals(c.getName()))) {
+			System.out.println("Country already exists.");
+		} else {
+			return true;
+		}
+		return false;
 	}
 
 }
