@@ -9,7 +9,7 @@ import com.magenic.covidinfo.models.CovidInfo;
 public class CrudInfoService {
 	CovidInformationInterface covidInformationInterface = new CovidInformationInterface() {};
 	
-	private static List<CovidInfo> covidInfos = new ArrayList<>();
+	public static List<CovidInfo> covidInfos = new ArrayList<>();
 	
 	public void add(CovidInfo covidInfo) {
 		Optional.of(covidInfo)
@@ -26,4 +26,5 @@ public class CrudInfoService {
 		covidInfos.removeIf(c -> c.getName().equals(name));
 		System.out.format("%s COVID-19 Information has been deleted\n", name);
 	}
+	
 }

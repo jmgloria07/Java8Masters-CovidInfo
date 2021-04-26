@@ -13,21 +13,7 @@ public class Main {
 	private static Scanner scan = new Scanner(System.in);
 
 	public static void main(String[] args) {
-		
-		
 		startPage();
-		
-		
-		  
-		  service.add(new CovidInfo("US",
-		  1000, 20, 552)); service.add(new CovidInfo("US", 1001, 20, 552));
-		  service.add(new CovidInfo("US", 1002, 20, 552));
-		  
-		  //CrudInfoService.covidInfos.forEach(CovidInfo::display);
-		  
-		  service.delete("US");
-		  
-		  //CrudInfoService.covidInfos.forEach(CovidInfo::display);
 	}
 	
 	public static void startPage(){
