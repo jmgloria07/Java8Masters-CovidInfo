@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 import com.magenic.covidinfo.models.CovidInfo;
 import com.magenic.covidinfo.services.CovidInfoCrud;
@@ -88,8 +89,9 @@ public class Main {
 		
 		if(Arrays.stream(values).anyMatch(option::equals)) {
 			
-			service.display(option);
-			
+			String list = service.display(option);
+			System.out.println(list);
+			//saveResultToFile(list);
 		}else if("-1".equals(option)) {
 			
 			System.out.println("Returning to Homepage");
@@ -158,7 +160,9 @@ public class Main {
 			System.out.println("\n============================================================");
 			System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases", "Deaths", "Recoveries","Date"));
 			System.out.println("============================================================");	
-			service.search(name);
+			String list = service.search(name);
+			System.out.println(list);
+			//saveResultToFile(list);
 		}else if(searchOptions.keySet().stream().anyMatch(option::equals)) {
 			
 			System.out.printf("Enter Number of %s (greater than equal) : ",searchOptions.get(option));
@@ -168,8 +172,9 @@ public class Main {
 			System.out.println(String.format("%10s %10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries","Date"));
 			System.out.println("============================================================");		
 		
-			service.search(count, option);
-			
+			String list = service.search(count, option);
+			System.out.println(list);
+			//saveResultToFile(list);
 		}else if("-1".equals(option)) {
 			System.out.println("Returning to Homepage");
 		} else {
@@ -177,6 +182,23 @@ public class Main {
 		}
 		
 		System.out.println();
+	}
+	
+	private static void saveResultToFile(String info) {
+		System.out.print("Would you like to save the result to a file? ");
+		String choice = scan.nextLine();
+		
+		if ("Y".equals(choice)) {
+			System.out.printf("Information saved in: %s", service.saveToFile());
+		}
+	}
+	
+	private static String getHeader() {
+		StringJoiner sj = new StringJoiner("\n");
+		sj.add("============================================================");
+		sj.add(String.format("%10s %10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries", "Date"));
+		sj.add("============================================================");	
+		return sj.toString();
 	}
 
 }

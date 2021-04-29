@@ -7,15 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.magenic.covidinfo.models.CovidInfo;
+import com.magenic.covidinfo.util.FileUtils;
 
 public class CovidInfoCrud {
 	CovidInformationInterface covidInformationInterface = new CovidInformationInterface() {};
+	FileUtils fileUtils = new FileUtils();	
 
 	private Map<String, Comparator<CovidInfo>> sortBy = null;
-
+	
+	private static final Function<CovidInfo, String> formatDisplay = info -> String.format("%10s %10s %10s %10s %15s", info.getName(),
+			info.getCases(), info.getDeaths(), info.getRecoveries(), info.getDate());
 
 	public CovidInfoCrud() {
 		sortBy = new HashMap<>();
@@ -42,35 +48,38 @@ public class CovidInfoCrud {
 		System.out.format("%s COVID-19 Information has been deleted\n", name);
 	}
 
-	public void display(String actionType) {
+	public String display(String actionType) {
 
 		Collections.sort(covidInfos, sortBy.getOrDefault(actionType, Comparator.comparing(CovidInfo::getName)));
 
-		covidInfos.forEach(info -> System.out.println(String.format("%10s %10s %10s %10s %15s", info.getName(),
-				info.getCases(), info.getDeaths(), info.getRecoveries(),info.getDate())));
-
+		return covidInfos.stream().map(formatDisplay::apply)
+				.collect(Collectors.joining("\n"));
 	}
 	
-	public void search(String name) {
+	public String search(String name) {
 
-		covidInfos.stream().filter(info -> info.getName().equalsIgnoreCase(name))
+		return covidInfos.stream().filter(info -> info.getName().equalsIgnoreCase(name))
 			.sorted(Comparator.comparing(CovidInfo::getName))
-			.forEach(info -> System.out.println(String.format("%10s %10s %10s %10s %15s", info.getName(),
-						info.getCases(), info.getDeaths(), info.getRecoveries(),info.getDate())));
+			.map(formatDisplay::apply)
+			.collect(Collectors.joining("\n"));
 	}
 	
-	public void search(String count, String option) {
+	public String search(String count, String option) {
 		Map<String, Predicate<CovidInfo>> searchFilterMap = new HashMap<>();
-		Integer num = Integer.parseInt(count);
-		
+		Integer num = Integer.parseInt(count);		
 		
 		searchFilterMap.put("2", (p) -> (p.getCases() >= num));
 		searchFilterMap.put("3", (p) -> (p.getDeaths() >= num));
 		searchFilterMap.put("4", (p) -> (p.getRecoveries() >= num));
-
-		covidInfos.stream().filter(searchFilterMap.get(option)).sorted(sortBy.get(option))
-			.forEach(info -> System.out.println(String.format("%10s %10s %10s %10s %15s", info.getName(),
-						info.getCases(), info.getDeaths(), info.getRecoveries(),info.getDate())));
+		return covidInfos.stream()
+				.filter(searchFilterMap.get(option))
+				.sorted(sortBy.get(option))
+				.map(formatDisplay::apply)
+				.collect(Collectors.joining("\n"));
+	}
+	
+	public String saveToFile() {
+		return fileUtils.saveInfoToFile();
 	}
 	
 	private static boolean isInputValid(CovidInfo covidInfo) {
@@ -83,5 +92,7 @@ public class CovidInfoCrud {
 		}
 		return false;
 	}
+
+	
 
 }
