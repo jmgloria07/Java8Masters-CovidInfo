@@ -32,7 +32,7 @@ public class CovidInfoCrud {
 			if (!isInputValid(covidInfo)) return null;
 			covidInfos.add(c);
 			return "COVID-19 Information:\n"
-					+ covidInformationInterface.format(c.getName(), c.getCases(), c.getDeaths(), c.getRecoveries())
+					+ covidInformationInterface.format(c.getDate(),c.getName(), c.getCases(), c.getDeaths(), c.getRecoveries())
 					+ "\n";
 		}).ifPresent(System.out::println);
 	}
@@ -46,8 +46,8 @@ public class CovidInfoCrud {
 
 		Collections.sort(covidInfos, sortBy.getOrDefault(actionType, Comparator.comparing(CovidInfo::getName)));
 
-		covidInfos.forEach(info -> System.out.println(String.format("%10s %10s %10s %15s", info.getName(),
-				info.getCases(), info.getDeaths(), info.getRecoveries())));
+		covidInfos.forEach(info -> System.out.println(String.format("%10s %10s %10s %10s %15s", info.getName(),
+				info.getCases(), info.getDeaths(), info.getRecoveries(),info.getDate())));
 
 	}
 	
@@ -55,8 +55,8 @@ public class CovidInfoCrud {
 
 		covidInfos.stream().filter(info -> info.getName().equalsIgnoreCase(name))
 			.sorted(Comparator.comparing(CovidInfo::getName))
-			.forEach(info -> System.out.println(String.format("%10s %10s %10s %15s", info.getName(),
-						info.getCases(), info.getDeaths(), info.getRecoveries())));
+			.forEach(info -> System.out.println(String.format("%10s %10s %10s %10s %15s", info.getName(),
+						info.getCases(), info.getDeaths(), info.getRecoveries(),info.getDate())));
 	}
 	
 	public void search(String count, String option) {
@@ -69,8 +69,8 @@ public class CovidInfoCrud {
 		searchFilterMap.put("4", (p) -> (p.getRecoveries() >= num));
 
 		covidInfos.stream().filter(searchFilterMap.get(option)).sorted(sortBy.get(option))
-			.forEach(info -> System.out.println(String.format("%10s %10s %10s %15s", info.getName(),
-						info.getCases(), info.getDeaths(), info.getRecoveries())));
+			.forEach(info -> System.out.println(String.format("%10s %10s %10s %10s %15s", info.getName(),
+						info.getCases(), info.getDeaths(), info.getRecoveries(),info.getDate())));
 	}
 	
 	private static boolean isInputValid(CovidInfo covidInfo) {

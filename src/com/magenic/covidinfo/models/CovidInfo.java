@@ -1,21 +1,21 @@
 package com.magenic.covidinfo.models;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class CovidInfo {
 	private String name;
 	private int cases;
 	private int deaths;
 	private int recoveries;
-	private LocalDateTime date;
+	private LocalDate date;
 	
-	public CovidInfo(String name, int cases, int deaths, int recoveries) {
+	public CovidInfo(String name, int cases, int deaths, int recoveries, LocalDate date) {
 		super();
 		this.name = name;
 		this.cases = cases;
 		this.deaths = deaths;
 		this.recoveries = recoveries;
-		this.setDate(LocalDateTime.now());
+		this.date = date;
 	}
 	
 	public String getName() {
@@ -42,11 +42,11 @@ public class CovidInfo {
 	public void setRecoveries(int recoveries) {
 		this.recoveries = recoveries;
 	}
-	public LocalDateTime getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 	

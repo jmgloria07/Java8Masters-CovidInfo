@@ -1,6 +1,7 @@
 package com.magenic.covidinfo;
 
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,17 +9,20 @@ import java.util.Scanner;
 
 import com.magenic.covidinfo.models.CovidInfo;
 import com.magenic.covidinfo.services.CovidInfoCrud;
+import com.magenic.covidinfo.util.DateAndLocalizationUtil;
 
 public class Main {
 
 	private static CovidInfoCrud service = new CovidInfoCrud();
 	private static Scanner scan = new Scanner(System.in);
 
+	
 	public static void main(String[] args) {		
 		startPage();
 	}
 	
 	public static void startPage(){
+
 		System.out.println("Choose an Action to Perform:");
 		System.out.println("[1] List All Covid Info");
 		System.out.println("[2] Add New Covid Info");
@@ -76,7 +80,7 @@ public class Main {
 		String option = scan.nextLine();
 		
 		System.out.println("\n============================================================");
-		System.out.println(String.format("%10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries"));
+		System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases","Deaths","Recoveries","Date"));
 		System.out.println("============================================================");
 		
 		String[] values = {"1","2","3","4"};
@@ -107,8 +111,20 @@ public class Main {
 		int deathsCount = scan.nextInt();
 		System.out.print("Enter Number of Recoveries: ");
 		int recoveriesCount = scan.nextInt();
-		System.out.println();
-		service.add(new CovidInfo(country, casesCount, deathsCount, recoveriesCount));
+		
+		scan.nextLine();
+		 String date = null;
+		 LocalDate localDate = null;
+		 
+		do {
+			System.out.print("Enter Date (MM/dd/yyy): ");
+			date = scan.nextLine();
+			System.out.println();
+			localDate = DateAndLocalizationUtil.parseDate(date);
+		}while(localDate == null);
+		
+		
+		service.add(new CovidInfo(country, casesCount, deathsCount, recoveriesCount,localDate));
 	}
 	
 	public static void deleteCovidInfo() {
@@ -116,7 +132,7 @@ public class Main {
 		String country = scan.nextLine();
 		service.delete(country);
 		System.out.println("\n============================================================");
-		System.out.println(String.format("%10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries"));
+		System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases", "Deaths", "Recoveries" , "Date"));
 		System.out.println("============================================================");
 		CovidInfoCrud.covidInfos.forEach(CovidInfo::display);
 		System.out.println();
@@ -124,7 +140,7 @@ public class Main {
 	}
 	
 	public static void searchCovidInfo() {
-		String[] values = {"2","3","4"};
+	
 		Map<String,String> searchOptions = new HashMap<String, String>();
 		searchOptions.put("2", "Cases");
 		searchOptions.put("3", "Deaths");
@@ -140,7 +156,7 @@ public class Main {
 			String name = scan.nextLine();
 
 			System.out.println("\n============================================================");
-			System.out.println(String.format("%10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries"));
+			System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases", "Deaths", "Recoveries","Date"));
 			System.out.println("============================================================");	
 			service.search(name);
 		}else if(searchOptions.keySet().stream().anyMatch(option::equals)) {
@@ -149,7 +165,7 @@ public class Main {
 			String count = scan.nextLine();
 
 			System.out.println("\n============================================================");
-			System.out.println(String.format("%10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries"));
+			System.out.println(String.format("%10s %10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries","Date"));
 			System.out.println("============================================================");		
 		
 			service.search(count, option);
