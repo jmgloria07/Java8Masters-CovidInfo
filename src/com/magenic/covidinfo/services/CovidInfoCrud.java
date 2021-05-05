@@ -20,8 +20,8 @@ public class CovidInfoCrud {
 
 	private Map<String, Comparator<CovidInfo>> sortBy = null;
 	
-	private static final Function<CovidInfo, String> formatDisplay = info -> String.format("%10s %10s %10s %10s %15s", info.getName(),
-			info.getCases(), info.getDeaths(), info.getRecoveries(), info.getDate());
+	private static final Function<CovidInfo, String> formatDisplay = info -> String.format("%10s %10s %10s %10s %15s", 
+				info.getName(), info.getCases(), info.getDeaths(), info.getRecoveries(), info.getDate());
 
 	public CovidInfoCrud() {
 		sortBy = new HashMap<>();
@@ -49,7 +49,6 @@ public class CovidInfoCrud {
 	}
 
 	public String display(String actionType) {
-
 		Collections.sort(covidInfos, sortBy.getOrDefault(actionType, Comparator.comparing(CovidInfo::getName)));
 
 		return covidInfos.stream().map(formatDisplay::apply)
@@ -57,7 +56,6 @@ public class CovidInfoCrud {
 	}
 	
 	public String search(String name) {
-
 		return covidInfos.stream().filter(info -> info.getName().equalsIgnoreCase(name))
 			.sorted(Comparator.comparing(CovidInfo::getName))
 			.map(formatDisplay::apply)
@@ -78,8 +76,16 @@ public class CovidInfoCrud {
 				.collect(Collectors.joining("\n"));
 	}
 	
-	public String saveToFile() {
-		return fileUtils.saveInfoToFile();
+	public List<String> getInfo(String filename) {
+		return fileUtils.getLines(filename);
+	}
+	
+	public String saveToFile(String info) {
+		return fileUtils.writeFile(info);
+	}
+	
+	public List<String> listFiles() {
+		return fileUtils.listFiles();
 	}
 	
 	private static boolean isInputValid(CovidInfo covidInfo) {

@@ -23,12 +23,12 @@ public class Main {
 	}
 	
 	public static void startPage(){
-
 		System.out.println("Choose an Action to Perform:");
 		System.out.println("[1] List All Covid Info");
 		System.out.println("[2] Add New Covid Info");
 		System.out.println("[3] Delete Covid Info");
 		System.out.println("[4] Search for Covid Info");
+		System.out.println("[5] List All Info from file");
 		System.out.println("[-1] Exit");
 		System.out.print("Enter action type : ");
 		String choice = scan.nextLine();
@@ -59,6 +59,12 @@ public class Main {
 			break;
 		}
 		
+		case "5": {
+			listAllInfoFromFile();
+			startPage();
+			break;
+		}
+		
 		case "-1": {
 			System.out.println("Exiting Application");
 			break;
@@ -66,32 +72,41 @@ public class Main {
 
 		default:
 			if( choice != null && !"".equals(choice)) {
-				System.out.println("\nInvalid Input\n");
-				
+				System.out.println("\nInvalid Input\n");				
 			}
+			
 			startPage();
 			break;
 		}
 		System.out.println();
 	}
 	
+	public static void listAllInfoFromFile() {
+		System.out.println("\nCOVID files in the directory: ");
+		
+		service.listFiles().stream()
+			.forEach(System.out::println);
+		
+		System.out.print("Choose file to view: ");
+		String choice = scan.nextLine();
+		
+		System.out.printf("Displaying info from %s\n\n",choice);
+		service.getInfo(choice).stream()
+			.forEach(System.out::println);
+	}
+
 	public static void listAllCovidInfo() {
 		System.out.println("\nChoose sort option\n[1] By Country\n[2] By Cases\n[3] By Deaths\n[4] By Recoveries\n[-1] Exit");
 		System.out.print("Enter option type : ");
 		String option = scan.nextLine();
 		
-		System.out.println("\n============================================================");
-		System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases","Deaths","Recoveries","Date"));
-		System.out.println("============================================================");
-		
 		String[] values = {"1","2","3","4"};
 		
 		
-		if(Arrays.stream(values).anyMatch(option::equals)) {
-			
-			String list = service.display(option);
-			System.out.println(list);
-			//saveResultToFile(list);
+		if(Arrays.stream(values).anyMatch(option::equals)) {			
+			String display = getHeader() + service.display(option);
+			System.out.println(display);
+			saveResultToFile(display);
 		}else if("-1".equals(option)) {
 			
 			System.out.println("Returning to Homepage");
@@ -119,7 +134,7 @@ public class Main {
 		 LocalDate localDate = null;
 		 
 		do {
-			System.out.print("Enter Date (MM/dd/yyy): ");
+			System.out.print("Enter Date (MM/dd/yyyy): ");
 			date = scan.nextLine();
 			System.out.println();
 			localDate = DateAndLocalizationUtil.parseDate(date);
@@ -133,16 +148,13 @@ public class Main {
 		System.out.print("Enter Country Name: ");
 		String country = scan.nextLine();
 		service.delete(country);
-		System.out.println("\n============================================================");
-		System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases", "Deaths", "Recoveries" , "Date"));
-		System.out.println("============================================================");
+		System.out.println("\n" + getHeader());
 		CovidInfoCrud.covidInfos.forEach(CovidInfo::display);
 		System.out.println();
 		
 	}
 	
-	public static void searchCovidInfo() {
-	
+	public static void searchCovidInfo() {	
 		Map<String,String> searchOptions = new HashMap<String, String>();
 		searchOptions.put("2", "Cases");
 		searchOptions.put("3", "Deaths");
@@ -150,31 +162,22 @@ public class Main {
 		
 		System.out.println("\nChoose an option\n[1] By Country\n[2] By Cases\n[3] By Deaths\n[4] By Recoveries\n[-1] Exit");
 		System.out.print("Enter option type : ");
-		String option = scan.nextLine();
-		
+		String option = scan.nextLine();		
 		
 		if("1".equals(option)) {
 			System.out.print("Enter Country Name : ");
 			String name = scan.nextLine();
-
-			System.out.println("\n============================================================");
-			System.out.println(String.format("%10s %10s %10s %15s %10s", "Country", "Cases", "Deaths", "Recoveries","Date"));
-			System.out.println("============================================================");	
-			String list = service.search(name);
-			System.out.println(list);
-			//saveResultToFile(list);
-		}else if(searchOptions.keySet().stream().anyMatch(option::equals)) {
 			
+			String display = getHeader() + service.search(name);
+			System.out.println(display);
+			saveResultToFile(display);
+		}else if(searchOptions.keySet().stream().anyMatch(option::equals)) {			
 			System.out.printf("Enter Number of %s (greater than equal) : ",searchOptions.get(option));
 			String count = scan.nextLine();
-
-			System.out.println("\n============================================================");
-			System.out.println(String.format("%10s %10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries","Date"));
-			System.out.println("============================================================");		
 		
-			String list = service.search(count, option);
-			System.out.println(list);
-			//saveResultToFile(list);
+			String display = getHeader() + service.search(count, option);
+			System.out.println(display);
+			saveResultToFile(display);
 		}else if("-1".equals(option)) {
 			System.out.println("Returning to Homepage");
 		} else {
@@ -185,11 +188,11 @@ public class Main {
 	}
 	
 	private static void saveResultToFile(String info) {
-		System.out.print("Would you like to save the result to a file? ");
+		System.out.print("\nWould you like to save the result to a file? (Y/N): ");
 		String choice = scan.nextLine();
 		
 		if ("Y".equals(choice)) {
-			System.out.printf("Information saved in: %s", service.saveToFile());
+			System.out.printf("Information saved in: %s\n", service.saveToFile(info));
 		}
 	}
 	
@@ -197,7 +200,7 @@ public class Main {
 		StringJoiner sj = new StringJoiner("\n");
 		sj.add("============================================================");
 		sj.add(String.format("%10s %10s %10s %10s %15s", "Country", "Cases", "Deaths", "Recoveries", "Date"));
-		sj.add("============================================================");	
+		sj.add("============================================================\n");	
 		return sj.toString();
 	}
 
