@@ -32,11 +32,35 @@ public class CovidInfoCrud {
 	}
 
 	public static List<CovidInfo> covidInfos = new ArrayList<>();
+	
+	
+	
 
 	public void add(CovidInfo covidInfo) {
+		
+		Predicate<CovidInfo> checkCountry = c -> {return covidInfos.stream().anyMatch(a -> c.getName().equals(a.getName()));};
+		Predicate<CovidInfo> checkDate = c -> {return covidInfos.stream().anyMatch(a -> c.getDate().equals(a.getDate()));};
+		
 		Optional.of(covidInfo).map(c -> {
 			if (!isInputValid(covidInfo)) return null;
-			covidInfos.add(c);
+			
+			if (checkCountry.test(c) && checkDate.test(c)) {
+				int index = covidInfos.indexOf(c);
+        		c.setCases(covidInfo.getCases());
+        		c.setDeaths(covidInfo.getDeaths());
+        		c.setRecoveries(covidInfo.getRecoveries());
+        		covidInfos.set(index, c);
+			} 
+			else if (checkCountry.test(c) && !checkDate.test(c)) {
+				int index = covidInfos.indexOf(c);
+	    		c.setCases(covidInfo.getCases()+c.getCases());
+	    		c.setDeaths(covidInfo.getDeaths()+c.getDeaths());
+	    		c.setRecoveries(covidInfo.getRecoveries()+c.getRecoveries());
+	    		covidInfos.set(index, covidInfo);
+			}
+			else{
+				covidInfos.add(c);
+			}
 			return "COVID-19 Information:\n"
 					+ covidInformationInterface.format(c.getDate(),c.getName(), c.getCases(), c.getDeaths(), c.getRecoveries())
 					+ "\n";
@@ -91,9 +115,11 @@ public class CovidInfoCrud {
 	private static boolean isInputValid(CovidInfo covidInfo) {
 		if (covidInfo.getDeaths() + covidInfo.getRecoveries() > covidInfo.getCases()) {
 			System.out.println("Number of recoveries plus deaths cannot be greater than total number of cases.");
-		} else if (covidInfos.stream().anyMatch(c -> covidInfo.getName().equals(c.getName()))) {
-			System.out.println("Country already exists.");
-		} else {
+		} 
+//		else if (covidInfos.stream().anyMatch(c -> covidInfo.getName().equals(c.getName()))) {
+//			System.out.println("Country already exists.");
+//		} 
+		else {
 			return true;
 		}
 		return false;
